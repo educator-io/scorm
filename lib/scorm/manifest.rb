@@ -66,7 +66,12 @@ module Scorm
         lom_el = nil
         if adlcp_location = REXML::XPath.first(metadata_el, 'adlcp:location')
           # Read external metadata file
-          metadata_xmldoc = REXML::Document.new(package.file(adlcp_location.text.to_s))
+          metadata_xmldoc = if @package.kind_of?(ActiveRecord::Relation)
+                              file_obj = @package.detect{|obj| obj.path.match("#{adlcp_location.text.to_s}")}
+                              REXML::Document.new(file_obj.file.read)
+                            else
+                              REXML::Document.new(@package.file(adlcp_location.text.to_s))
+                            end
           if metadata_xmldoc.nil? || (metadata_xmldoc.root.name != 'lom')
             raise InvalidManifest, "Invalid external metadata file (#{adlcp_location.text.to_s})."
           else
