@@ -55,7 +55,7 @@ module Scorm
       @package = filename.respond_to?(:path) ? filename.path : filename
 
       if @package.kind_of?(ActiveRecord::Relation)
-        manifest = @package.detect{|file| file.file.filename.match(/manifest.xml/)}.file.read
+        manifest = @package.detect{|file| file.file.filename.match(/imsmanifest.xml/)}.file.read
         @manifest = Manifest.new(@package, manifest)
 
         yield(self)
